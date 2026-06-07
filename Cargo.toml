@@ -8,7 +8,8 @@ license = "Apache-2.0"
 authors = ["infinityabundance"]
 repository = "https://github.com/infinityabundance/kobold-bench"
 readme = "README.md"
-publish = false
+keywords = ["cobol", "benchmark", "packed-decimal", "comp-3", "mainframe"]
+categories = ["development-tools::profiling", "command-line-utilities"]
 
 [dependencies]
 gnucobol-rs = "0.2.4"

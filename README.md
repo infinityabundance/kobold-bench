@@ -69,4 +69,4 @@ packaging for a full S3 → verified-records reference architecture.
 ## License
 
 Apache-2.0 (`LICENSE`). Links `gnucobol-rs` (LGPL-3.0-or-later) — see [`NOTICE`](NOTICE) for the
-binary-distribution obligations. Not published to crates.io (a benchmark harness, not a library).
+binary-distribution obligations.
