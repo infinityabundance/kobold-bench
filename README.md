@@ -1,5 +1,7 @@
 # kobold-bench
 
+<img src="assets/kobold_data_shim.png" width="200">
+
 **Benchmark harness for the [`gnucobol-rs`](https://github.com/infinityabundance/gnucobol-rs) hot
 path** — the `cob_move` DISPLAY ↔ COMP-3 conversions that dominate legacy-file ingestion — with a
 **parity re-check after every run**. The doctrine: *performance work never alters sealed semantics.*
