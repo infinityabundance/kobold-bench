@@ -1,0 +1,11 @@
+kobold-bench
+Copyright 2026 infinityabundance
+
+This product's own source code is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+It depends on and links `gnucobol-rs`, which is licensed under LGPL-3.0-or-later (a faithful
+derivative port of GnuCOBOL's libcob). Any distributed binary that statically links gnucobol-rs is a
+"Combined Work" under LGPL-3.0 section 4: give prominent notice gnucobol-rs is used, provide the
+means to relink against a modified gnucobol-rs, and convey the LGPL-3.0 text with its source. This
+crate is publish = false (a benchmark harness), so it is normally built from source, not distributed
+as a binary. See https://github.com/infinityabundance/gnucobol-rs .
