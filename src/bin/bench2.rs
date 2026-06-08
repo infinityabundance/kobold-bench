@@ -137,6 +137,21 @@ fn main() {
     }
     let custody = t.elapsed() / iters;
 
+    // --- KOBOLD.PERF.2: per-stage profiling (parse / per-record / aggregate) over the reference corpus ---
+    let prof = {
+        use kobold_data_shim::recon::reconcile_profile;
+        let mut acc = (0u128, 0u128, 0u128);
+        for _ in 0..iters {
+            let (_, p) = reconcile_profile("bench2", CB, &ref_data, RL, "0.7.1", &NoCopy, Encoding::Ascii).unwrap();
+            acc = (acc.0 + p.parse_ns, acc.1 + p.record_ns, acc.2 + p.aggregate_ns);
+        }
+        (acc.0 / iters as u128, acc.1 / iters as u128, acc.2 / iters as u128)
+    };
+    let stage_total = (prof.0 + prof.1 + prof.2).max(1) as f64;
+    let pct = |x: u128| 100.0 * x as f64 / stage_total;
+    let bottleneck = if prof.1 >= prof.0 && prof.1 >= prof.2 { "per_record" }
+        else if prof.2 >= prof.0 { "aggregate" } else { "parse" };
+
     // --- KOBOLD.PERF.1: record-level Rayon, ADMITTED ONLY if byte-identical to the scalar baseline ---
     #[cfg(feature = "rayon")]
     let (rayon_rps, rayon_us, speedup): (f64, f64, f64) = {
@@ -167,6 +182,7 @@ fn main() {
             "\"full_pipeline\":{{\"records_per_sec\":{:.0},\"us_per_record\":{:.3},\"mb_per_sec\":{:.1}}},",
             "\"decode_only_us_per_record\":{:.3},\"ingest_audit_overhead_us_per_record\":{:.3},",
             "\"custody_us_per_record\":{:.3},",
+            "\"perf2_stage_profile\":{{\"parse_ns\":{},\"per_record_ns\":{},\"aggregate_ns\":{},\"per_record_pct\":{:.1},\"aggregate_pct\":{:.1},\"bottleneck\":{:?}}},",
             "\"perf1_rayon\":{{\"enabled\":{},\"parity_with_scalar\":{},\"records_per_sec\":{:.0},\"us_per_record\":{:.3},\"speedup\":{:.2}}},",
             "\"corpus\":\"synthetic happy (DISPLAY+COMP-3+COMP+LEVEL-88) + POSTING.1/EXTRACT.PROFILE.1 custody; CORPUS.2 holds the hostile fixtures\",",
             "\"host\":{{\"cpu\":{:?},\"ncpu\":{},\"arch\":{:?},\"profile\":{:?},\"rayon\":{},\"simd\":false}},",
@@ -177,6 +193,7 @@ fn main() {
         decode.as_micros() as f64 / n as f64,
         (full.as_micros() as f64 - decode.as_micros() as f64) / n as f64,
         custody.as_micros() as f64 / n as f64,
+        prof.0, prof.1, prof.2, pct(prof.1), pct(prof.2), bottleneck,
         rayon_on, rayon_on, rayon_rps, rayon_us, speedup,
         cpu_model(), ncpu(),
         std::env::consts::ARCH,
@@ -189,5 +206,7 @@ fn main() {
     if rayon_on {
         eprintln!("KOBOLD.PERF.1 (rayon, byte-identical): {:.0} rec/s, {:.3} µs/rec, {:.2}× speedup", rayon_rps, rayon_us, speedup);
     }
+    eprintln!("KOBOLD.PERF.2 stage profile: parse {:.1}% · per-record {:.1}% · aggregate {:.1}% — bottleneck = {bottleneck}",
+              pct(prof.0), pct(prof.1), pct(prof.2));
     eprintln!("receipt: reports/BENCH-2-receipt.json");
 }

@@ -116,3 +116,10 @@ cargo run --release --bin kobold-scale --features rayon -- 1g
 > **No production SLA · no AWS cost · no mainframe equivalence · no universal throughput · no
 > customer-workload representativeness.** A synthetic-corpus number on one host is exactly that.
 
+## Per-stage profiling (`KOBOLD.PERF.2`)
+
+`kobold-bench2` now reports a `perf2_stage_profile` — the reconcile pipeline's three stages (parse /
+per-record / aggregate) with the bottleneck named. On this host the **per-record** stage dominates (~75%,
+the part PERF.1's Rayon parallelizes byte-identically), aggregation ~25% (serial/ordered), parse ~0.5%.
+Profiling never changes the emitted bytes; parallelism only touches record-local work.
+
