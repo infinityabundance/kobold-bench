@@ -35,3 +35,6 @@ unsafe_code = "forbid"
 
 [profile.release]
 overflow-checks = true
+
+[features]
+rayon = ["kobold-data-shim/rayon"]

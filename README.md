@@ -90,3 +90,11 @@ visible), and `host` (cpu/arch/profile, `rayon:false`, `simd:false`). The hostil
 fail-close on live in `kobold-data-shim`'s `KOBOLD.CORPUS.2`. **No production, AWS, parallel, or
 customer-workload throughput is claimed.**
 
+## Gated parallelism (`KOBOLD.PERF.1`)
+
+`kobold-bench2 --features rayon` adds **record-level Rayon** — admitted **only** when its output hash is
+byte-identical to the scalar baseline over a fixed reference corpus (`perf1 parity: rayon == scalar`); a
+mismatch aborts with `RAYON PARITY FAIL` and no timing. The receipt reports both modes + the speedup +
+`custody_us_per_record` (POSTING.1/EXTRACT.PROFILE.1). *Same evidence, faster — never weaker evidence,
+faster.* No production/AWS/SIMD/parallel-throughput claim; parallelism changes no emitted artifact.
+
