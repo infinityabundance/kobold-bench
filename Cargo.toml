@@ -14,6 +14,8 @@ categories = ["development-tools::profiling", "command-line-utilities"]
 [dependencies]
 gnucobol-rs = { version = "0.7", path = "../gnucobol-rs/crates/gnucobol-rs" }
 kobold-data-shim = { version = "0.6", path = "../kobold-data-shim" }
+rayon = { version = "1", optional = true }
+sha2 = "0.10"
 
 [dev-dependencies]
 criterion = { version = "0.5", default-features = false }
@@ -26,6 +28,10 @@ path = "src/main.rs"
 name = "kobold-bench2"
 path = "src/bin/bench2.rs"
 
+[[bin]]
+name = "kobold-scale"
+path = "src/bin/scale.rs"
+
 [[bench]]
 name = "cob_move"
 harness = false
@@ -37,4 +43,4 @@ unsafe_code = "forbid"
 overflow-checks = true
 
 [features]
-rayon = ["kobold-data-shim/rayon"]
+rayon = ["dep:rayon", "kobold-data-shim/rayon"]

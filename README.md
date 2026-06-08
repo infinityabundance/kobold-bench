@@ -98,3 +98,21 @@ mismatch aborts with `RAYON PARITY FAIL` and no timing. The receipt reports both
 `custody_us_per_record` (POSTING.1/EXTRACT.PROFILE.1). *Same evidence, faster — never weaker evidence,
 faster.* No production/AWS/SIMD/parallel-throughput claim; parallelism changes no emitted artifact.
 
+## Local scale measurement (`KOBOLD.SCALE.1`)
+
+`kobold-scale [100m|1g|5g|10g]` generates a declared synthetic **mixed fixed-record** corpus to a temp file
+and **streams** it through the sealed reconcile pipeline in fixed reconcile-blocks — so memory stays
+**bounded even at multi-GB** (1 GB corpus ≈ 57 MB peak RSS here). Scalar and Rayon use the same block unit,
+so their output hashes are byte-identical by construction; **Rayon timing is admitted only after that match
++ a pinned per-size baseline** (else `SCALE PARITY FAIL`). The receipt records wall time, throughput, peak
+RSS, temp disk, and the POSTING.1 hash chain.
+
+```sh
+cargo run --release --bin kobold-scale --features rayon -- 1g
+# -> reports/SCALE-1-receipt-1g.json (admitted) + SCALE-1-baseline-1g.json (pinned)
+```
+
+> [!CAUTION]
+> **No production SLA · no AWS cost · no mainframe equivalence · no universal throughput · no
+> customer-workload representativeness.** A synthetic-corpus number on one host is exactly that.
+
