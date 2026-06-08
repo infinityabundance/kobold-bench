@@ -72,3 +72,21 @@ packaging for a full S3 → verified-records reference architecture.
 
 Apache-2.0 (`LICENSE`). Links `gnucobol-rs` (LGPL-3.0-or-later) — see [`NOTICE`](NOTICE) for the
 binary-distribution obligations.
+
+## End-to-end scalar benchmark (`KOBOLD.BENCH.2`)
+
+`kobold-bench2` measures the **full shim reconciliation pipeline** (FILE.1 ingest → decode → LEVEL-88 →
+audit) over a synthetic happy corpus, in **scalar** mode (no Rayon, no SIMD, no fast mode). **Timing is
+admitted only after the output/audit hash matches the pinned baseline** — a benchmark must never alter or
+outrun sealed semantics. A mismatch aborts with `PARITY FAIL` and no timing.
+
+```sh
+cargo run --release --bin kobold-bench2 -- 50000   # records
+# -> reports/BENCH-2-receipt.json (records/sec, µs/record, decode-only vs full split, host/profile)
+```
+
+It records the output sha256, the decode-only vs full-pipeline split (so ingest+audit overhead is
+visible), and `host` (cpu/arch/profile, `rayon:false`, `simd:false`). The hostile fixtures the courts
+fail-close on live in `kobold-data-shim`'s `KOBOLD.CORPUS.2`. **No production, AWS, parallel, or
+customer-workload throughput is claimed.**
+
